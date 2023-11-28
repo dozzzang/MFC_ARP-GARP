@@ -93,8 +93,11 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
         // Check if the destination IP is ours
         if (checkAddressWithMyIp(arp_header->arp_PorotocolDstAddr)) { //Perhaps In Dlg
             // Respond to the ARP request swap!
+            unsigned char   temp_HardDestAddr[ENET_ADDR_SIZE], temp_ProtocolDestAddr[IP_ADDR_SIZE];
+             memcpy(temp_HardDestAddr, arp_header->arp_HardDstaddr, ENET_ADDR_SIZE);
+             memcpy(temp_ProtocolDestAddr, arp_header->arp_PorotocolDstAddr, IP_ADDR_SIZE);
             SetDstAddress(arp_header->arp_HardSrcAddr, arp_header->arp_ProtcolSrcAddr);
-            SetSrcAddress(m_myMac, m_myIp); // Perhaps In Dlg
+            SetSrcAddress(temp_HardDestAddr, temp_ProtocolDestAddr); // Perhaps In Dlg
             SetOption(ARP_OPCODE_REPLY);
         }
         return mp_UnderLayer->Send((unsigned char*)arp_header, sizeof(ARP_HEADER), ETHER_ARP_TYPE);
