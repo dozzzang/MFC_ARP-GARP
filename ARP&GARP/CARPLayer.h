@@ -70,7 +70,9 @@ public:
 	void setDlgMac(CString enet);
 
 	BOOL Send(unsigned char* ppayload, int nlength);
+	BOOL GSend(unsigned char* ppayload, int nlength);
 	BOOL Receive(unsigned char* ppayload);
+	BOOL GReceive(unsigned char* ppayload, int nlength);
 	static std::vector<LARP_NODE> m_arpTable;
 
 	void  byte2Str(const unsigned char* src, CString& dst, unsigned short t);

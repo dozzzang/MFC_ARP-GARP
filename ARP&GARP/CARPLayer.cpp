@@ -238,3 +238,26 @@ void CARPLayer::setDlgMac(CString enet) {
      m_arpTable.emplace_back(ipaddr, enetaddr, incomplete);
      return m_arpTable.back(); // 마지막에 추가된 요소의 참조 반환
  }
+
+ BOOL CARPLayer::GSend(unsigned char* ppayload, int nlength) {
+     unsigned char broadcastAddr[ENET_ADDR_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+     SetSrcAddress(m_myMac, m_myIp);
+     SetDstAddress(broadcastAddr, m_myIp); 
+     SetOption(ARP_OPCODE_REQUEST);
+
+     return this->GetUnderLayer()->Send((unsigned char*)&m_sHeader, sizeof(ARP_HEADER), ETHER_ARP_TYPE);
+ }
+
+ BOOL CARPLayer::GReceive(unsigned char* ppayload, int nlength) {
+     PARP_HEADER arp_header = (PARP_HEADER)ppayload;
+     LARP_NODE node;
+     CString src_ip_str;
+     byte2Str(arp_header->arp_ProtcolSrcAddr, src_ip_str, ARP_IP_TYPE);
+
+     memcpy(node.hard_addr, arp_header->arp_HardSrcAddr,ENET_ADDR_SIZE);
+     node.status = TRUE;
+     node.lifeTime = CTime::GetCurrentTime();
+     addOrUpdateARPEntry(src_ip_str, node);
+
+     return TRUE;
+ }
