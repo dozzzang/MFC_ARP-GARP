@@ -431,7 +431,7 @@ void Cipc2023Dlg::OnBnClickedButtonSelect()
 	// NILayer에 어댑터 설정
 	int selectedIndex = deviceComboBox.GetCurSel();
 	char* adapterName = (char*)deviceComboBox.GetItemDataPtr(selectedIndex);
-	m_Link->StartReceive(selectedIndex);
+	m_Link->StartReceive(adapterName);
 	SetTimer(1, 1000, NULL);
 	m_Link->SetThreadloop();
 	AfxBeginThread(m_Link->ReadingThread, m_Link);
@@ -451,8 +451,7 @@ void Cipc2023Dlg::OnBnClickedButtonSendIpaddress()
 	m_IP->SetDestIPAddress(dst_ip);
 
 	BYTE temp[4] = { 0,0,0,0 };
-	CARPLayer::LARP_NODE& arp_node = m_ARP->CreateArpNode(dst_ip, temp);
-
+	//CARPLayer::LARP_NODE& arp_node = m_ARP->CreateArpNode(dst_ip, temp);
 	// Send the ARP request
 	if (!m_IP->Send((unsigned char*)"request", 8))
 	{
@@ -461,13 +460,13 @@ void Cipc2023Dlg::OnBnClickedButtonSendIpaddress()
 	else {
 		// Convert dst_ip to CString for arp entry key
 		CString strDstIp;
-		m_ARP->byte2Str(dst_ip, strDstIp, ARP_IP_TYPE);
+		//m_ARP->byte2Str(dst_ip, strDstIp, ARP_IP_TYPE);
 
 		// Add or update ARP entry
-		m_ARP->addOrUpdateARPEntry(strDstIp, arp_node);
+		//m_ARP->addOrUpdateARPEntry(strDstIp, arp_node);
 
 		// GUI 업데이트
-		UpdateArpListCtrl();
+		//UpdateArpListCtrl();
 	}
 }
 void Cipc2023Dlg::UpdateArpListCtrl() {

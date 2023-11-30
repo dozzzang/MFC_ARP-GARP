@@ -76,10 +76,10 @@ BOOL CEthernetLayer::Receive(unsigned char* ppayload)
 
 
 	if (memcmp(pFrame->enet_dstaddr, m_sHeader.enet_srcaddr, sizeof(m_sHeader.enet_srcaddr)) == 0) {
-		if (pFrame->enet_type == ETHER_IP_TYPE)
+		if (pFrame->enet_type == 0x0800)
 			bSuccess = mp_aUpperLayer[0]->Receive(pFrame->enet_data);
 
-		else if (pFrame->enet_type == ETHER_ARP_TYPE)
+		else if (pFrame->enet_type == 0x0608)
 			bSuccess = mp_aUpperLayer[1]->Receive(pFrame->enet_data);
 	}
 	return bSuccess;
