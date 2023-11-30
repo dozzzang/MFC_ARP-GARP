@@ -402,6 +402,7 @@ void Cipc2023Dlg::OnBnClickedButtonHwSend()
 
 	m_SrcAddr.GetAddress(src_ip[0], src_ip[1], src_ip[2], src_ip[3]);
 
+	//garp set
 	m_IP->SetSrcIPAddress(src_ip);
 	m_IP->SetDestIPAddress(src_ip);
 
