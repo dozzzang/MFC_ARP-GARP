@@ -398,10 +398,13 @@ void Cipc2023Dlg::OnBnClickedButtonHwSend()
 	GetDlgItemText(IDC_EDIT_HW, strMacAddress);
 	m_ARP->setDlgMac(strMacAddress);
 
+	unsigned char charMacAddress[ENET_ADDR_SIZE] = { 0,0,0,0,0,0 };
+	m_ARP->str2Byte(charMacAddress, strMacAddress, ARP_ENET_TYPE);
+	m_Ethernet->SetSourceAddress(charMacAddress);
+
 	BYTE src_ip[4] = { 0,0,0,0 };	//BYTE는 unsgined char의 typedef
 
 	m_SrcAddr.GetAddress(src_ip[0], src_ip[1], src_ip[2], src_ip[3]);
-
 	//garp set
 	m_IP->SetSrcIPAddress(src_ip);
 	m_IP->SetDestIPAddress(src_ip);
