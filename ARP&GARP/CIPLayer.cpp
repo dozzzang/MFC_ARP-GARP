@@ -59,10 +59,9 @@ BOOL CIPLayer::Receive(unsigned char* ppayload)
 
 	BOOL bSuccess = FALSE;
 
-	if (memcmp((char*)Frame->ip_dest, (char*)m_sHeader.ip_src, 4) == 0 &&
-		memcmp((char*)Frame->ip_src, (char*)m_sHeader.ip_src, 4) != 0)
+	if (memcmp((char*)Frame->ip_dest, (char*)m_sHeader.ip_src, 4) == 0)
 	{
-		bSuccess = mp_aUpperLayer[0]->Receive((unsigned char*)Frame->ip_data);
+		bSuccess = mp_aUpperLayer[0]->Receive((unsigned char*)Frame->ip_data);	
 	}
 	return bSuccess;
 }

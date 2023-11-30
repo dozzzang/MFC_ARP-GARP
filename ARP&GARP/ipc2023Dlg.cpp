@@ -393,7 +393,24 @@ void Cipc2023Dlg::OnIpnFieldchangedIpaddress3(NMHDR* pNMHDR, LRESULT* pResult)
 
 void Cipc2023Dlg::OnBnClickedButtonHwSend()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// 변경된 NIC에 대한 맥 주소 문자열을 바이트 배열로 변환
+	CString strMacAddress;
+	GetDlgItemText(IDC_EDIT_HW, strMacAddress);
+	m_ARP->setDlgMac(strMacAddress);
+
+	BYTE src_ip[4] = { 0,0,0,0 };	//BYTE는 unsgined char의 typedef
+
+	m_SrcAddr.GetAddress(src_ip[0], src_ip[1], src_ip[2], src_ip[3]);
+
+	m_IP->SetSrcIPAddress(src_ip);
+	m_IP->SetDestIPAddress(src_ip);
+
+	if (!m_IP->Send((unsigned char*)"request", 8))
+	{
+		AfxMessageBox(_T("Failed to send ARP request."));
+	}
+
+
 }
 
 
