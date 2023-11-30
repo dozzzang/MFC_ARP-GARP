@@ -27,7 +27,7 @@ public:
     } NetworkDevice;
 
     std::vector<NetworkDevice>* GetDevicesList();
-    BOOL  StartReceive(int index);
+    void  StartReceive(char * adaptername);
     void SetThreadloop();
     static UINT ReadingThread(LPVOID pParam);
     CWinThread* m_pThread;

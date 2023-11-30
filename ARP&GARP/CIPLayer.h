@@ -25,13 +25,13 @@ public:
 		unsigned char ip_tos;		// 1byte
 		unsigned short ip_len;		// 2byte
 		unsigned short ip_id;		// 2byte
-		unsigned short ip_fragoffset;	// 2byte
+		unsigned char ip_fragoffset;	// 2byte
 		unsigned char ip_ttl;		// 1byte
 		unsigned char ip_proto;		// 1byte
 		unsigned short ip_checksum;	// 2byte
 		unsigned char ip_src[4];	// 4byte
 		unsigned char ip_dest[4];	// 4byte
-		unsigned char ip_data[1480];
+		unsigned char ip_data[IP_MAX_DATA_SIZE];
 
 	} IPLayer_HEADER, * pIPLayer_HEADER;
 

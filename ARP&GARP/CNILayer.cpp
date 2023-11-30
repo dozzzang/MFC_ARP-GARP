@@ -160,32 +160,30 @@ BOOL CNILayer::Send(unsigned char* payload, int length)
     return TRUE;
 }
 
-BOOL CNILayer::StartReceive(int index)
-{
-    if (index < 0 || index >= devicesList.size()) {
-        AfxMessageBox(_T("Invalid adapter index"));
-        return FALSE;
+
+   void CNILayer::StartReceive(char* adapterName)
+    {
+        char errbuf[PCAP_ERRBUF_SIZE];
+        pcap_t* handle = pcap_create(adapterName, errbuf);
+        if (!handle)
+        {
+            AfxMessageBox("Failed to open device handle");
+#ifdef DEBUG
+            DebugBreak();
+#endif
+            return;
+        }
+        pcap_set_timeout(handle, 0);
+        pcap_set_promisc(handle, TRUE);
+        //pcap_set_immediate_mode(handle, TRUE); WinPCAP    ̺귯            ȵ 
+        pcap_set_buffer_size(handle, 1024 * 1024);
+        pcap_set_snaplen(handle, 65535);
+
+        pcap_activate(handle);
+
+        _adapter = handle;
+
     }
-
-    const char* adapterName = devicesList[index].name;
-
-    if (_adapter != nullptr) {
-        pcap_close(_adapter);
-        _adapter = nullptr;
-    }
-
-    char errbuf[PCAP_ERRBUF_SIZE];
-    _adapter = pcap_open_live(adapterName, 65536, 1, 1000, errbuf);
-    if (_adapter == nullptr) {
-        CString errorMsg;
-        errorMsg.Format(_T("Failed to open device: %s"), CString(errbuf));
-        AfxMessageBox(errorMsg);
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
 
 BOOL CNILayer::Receive(unsigned char* packet)
 {

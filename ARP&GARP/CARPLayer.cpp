@@ -24,7 +24,7 @@ CARPLayer::~CARPLayer() {}
 std::vector<CARPLayer::LARP_NODE> CARPLayer::m_arpTable;
 
 void CARPLayer::ResetHeader() {
-    m_sHeader.arp_hardType = 0x0000;    //Ethernet 0x0001 based on layer structure
+    m_sHeader.arp_hardType = 0x0100;    //Ethernet 0x0001 based on layer structure
     m_sHeader.arp_protocolType = ARP_IP_TYPE;    //IP 0x0800 base on layer structrue
     m_sHeader.arp_hardLength = ENET_ADDR_SIZE;
     m_sHeader.arp_protocolLength = IP_ADDR_SIZE;
@@ -72,10 +72,11 @@ CARPLayer::_LARP_NODE::_LARP_NODE(unsigned char* ipaddr, unsigned char* enetaddr
             AfxMessageBox(_T("plz wait"));
             return TRUE;
         }
-        else if(found) {
+        else if(!found) {
             unsigned char broadcastAddr[ENET_ADDR_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
             LARP_NODE newNode(ip_header->ip_DstAddr, broadcastAddr, FALSE);
             addOrUpdateARPEntry(dst_ip_str, newNode);
+
             SetSrcAddress(m_myMac, ip_header->ip_SrcAddr);
             SetDstAddress(broadcastAddr, ip_header->ip_DstAddr);  // Broadcast address
             SetOption(ARP_OPCODE_REQUEST);
@@ -91,10 +92,13 @@ BOOL CARPLayer::Receive(unsigned char* ppayload) {
     // Process ARP request
     if (arp_header->arp_option == ARP_OPCODE_REQUEST) {
         // Check if the destination IP is ours
-        if (checkAddressWithMyIp(arp_header->arp_PorotocolDstAddr)) { //Perhaps In Dlg
+        if (checkAddressWithMyIp(arp_header->arp_ProtcolSrcAddr)) { //Perhaps In Dlg
             // Respond to the ARP request swap!
+            unsigned char   temp_HardDestAddr[ENET_ADDR_SIZE], temp_ProtocolDestAddr[IP_ADDR_SIZE];
+             memcpy(temp_HardDestAddr, arp_header->arp_HardDstaddr, ENET_ADDR_SIZE);
+             memcpy(temp_ProtocolDestAddr, arp_header->arp_PorotocolDstAddr, IP_ADDR_SIZE);
             SetDstAddress(arp_header->arp_HardSrcAddr, arp_header->arp_ProtcolSrcAddr);
-            SetSrcAddress(m_myMac, m_myIp); // Perhaps In Dlg
+            SetSrcAddress(temp_HardDestAddr, temp_ProtocolDestAddr); // Perhaps In Dlg
             SetOption(ARP_OPCODE_REPLY);
         }
         return mp_UnderLayer->Send((unsigned char*)arp_header, sizeof(ARP_HEADER), ETHER_ARP_TYPE);
@@ -148,7 +152,9 @@ void CARPLayer::addOrUpdateARPEntry(const CString& ip_key, const LARP_NODE& node
         CString currentIp;
         byte2Str(item.prot_addr, currentIp, ARP_IP_TYPE);
         if (currentIp == ip_key) {
-            item = node;
+            memcpy(item.hard_addr, node.hard_addr, ENET_ADDR_SIZE);
+            item.lifeTime = node.lifeTime;
+            item.status = node.status;
             return;
         }
     }
