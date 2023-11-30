@@ -73,9 +73,10 @@ BOOL CEthernetLayer::Receive(unsigned char* ppayload)
 
 
 
+	unsigned char broadcastAddr[ENET_ADDR_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
-
-	if (memcmp(pFrame->enet_dstaddr, m_sHeader.enet_srcaddr, sizeof(m_sHeader.enet_srcaddr)) == 0) {
+	if (memcmp(pFrame->enet_dstaddr, m_sHeader.enet_srcaddr, sizeof(m_sHeader.enet_srcaddr)) == 0 ||
+		memcmp(pFrame->enet_dstaddr, broadcastAddr, sizeof(ENET_ADDR_SIZE)) == 0) {
 		if (pFrame->enet_type == 0x0800)
 			bSuccess = mp_aUpperLayer[0]->Receive(pFrame->enet_data);
 
