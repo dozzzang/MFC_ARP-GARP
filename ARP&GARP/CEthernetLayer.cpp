@@ -57,8 +57,6 @@ void CEthernetLayer::SetDestinAddress(unsigned char* pAddress)
 BOOL CEthernetLayer::Send(unsigned char* ppayload, int nlength, unsigned short type)
 {
 	memcpy(m_sHeader.enet_data, ppayload, nlength);
-	memcpy(m_sHeader.enet_srcaddr, &m_sHeader.enet_data[8], 6);
-	memcpy(m_sHeader.enet_dstaddr, &m_sHeader.enet_data[18], 6);
 	m_sHeader.enet_type = type;
 
 	return mp_UnderLayer->Send((unsigned char*)&m_sHeader, nlength + ETHER_HEADER_SIZE);

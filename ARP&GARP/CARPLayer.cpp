@@ -73,7 +73,9 @@ CARPLayer::_LARP_NODE::_LARP_NODE(unsigned char* ipaddr, unsigned char* enetaddr
             return TRUE;
         }
         else if(!found) {
+            CEthernetLayer* m_ethernet = (CEthernetLayer*)mp_UnderLayer;
             unsigned char broadcastAddr[ENET_ADDR_SIZE] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+            m_ethernet->SetDestinAddress(broadcastAddr);
             LARP_NODE newNode(ip_header->ip_DstAddr, broadcastAddr, FALSE);
             addOrUpdateARPEntry(dst_ip_str, newNode);
 
